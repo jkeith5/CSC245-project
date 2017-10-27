@@ -1,6 +1,11 @@
 import tkinter as tk
 
 FONT_TYPE=('Times New Roman', 12)
+loginSoFar=[]
+validLogin1= 524951
+validLogin2= 785412
+validLogin3= 225485
+singleLineLogin=0
 
 class POSSystem(tk.Tk):
 
@@ -24,36 +29,57 @@ class POSSystem(tk.Tk):
 
 def printText(inside):
     print(inside)
-
+def verifyLogin(argument):##this is supposed to take the button pressed on LoginPage and verify account info
+    if argument == int:##this is to accept numbers
+        loginSoFar= loginSoFar.append(argument)##adding them to a list
+        list(loginSoFar)
+        if len(loginSoFar)==6:
+            for x in loginSoFar:##this turns the list into a singleline argument
+                singleLineLogin = (singleLineLogin*10) + int(loginSoFar[x])
+                print(singleLineLogin)
+                
+    elif argument == type(str):##this is to accept clear/login buttons
+        if argument == 'Login':
+            if singleLineLogin == validLogin1 or singleLineLogin == validLogin2 or singleLineLogin== validLogin3:##checks the validity of entered data
+                controller.show_frame(PageAfterLogin)
+            else:##if entered data is not correct, displays a text box.
+                root =Tk()
+                Errorbox=Text(root,height=2,width=30)
+                Errorbox.pack()
+                Errorbox.insert(END, "Incorrect login information, try again.")
+                controller.show_frame(LoginPage)
+                mainloop()
 class LoginPage(tk.Frame):##login page
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         label = tk.Label(self, text="Welcome, enter your employee number to login!",font=FONT_TYPE)##this just shows text, not a button or anything
-        label.pack(pady=10,padx=10)
+        label.grid(row=0, columnspan = 5, pady=10,padx=10)
 
-        button1 =   tk.Button(self, text="1", command=lambda: printText("1"))
-        button1.pack()
-        button2 =   tk.Button(self, text="2", command=lambda: printText("2"))
-        button2.pack()
-        button3 =   tk.Button(self, text="3", command=lambda: printText("3"))
-        button3.pack()
-        button4 =   tk.Button(self, text="4", command=lambda: printText("4"))
-        button4.pack()
-        button5 =   tk.Button(self, text="5", command=lambda: printText("5"))
-        button5.pack()
-        button6 =   tk.Button(self, text="6", command=lambda: printText("6"))
-        button6.pack()
-        button7 =   tk.Button(self, text="7", command=lambda: printText("7"))
-        button7.pack()
-        button8 =   tk.Button(self, text="8", command=lambda: printText("8"))
-        button8.pack()
-        button9 =   tk.Button(self, text="9", command=lambda: printText("9"))
-        button9.pack()
-        button0 =   tk.Button(self, text="0", command=lambda: printText("0"))
-        button0.pack()
-        buttonLogin =   tk.Button(self, text="Log In", command=lambda: controller.show_frame(PageAfterLogin))#Will return a different response based on whether login worked later
-        buttonLogin.pack()
+        button1 =   tk.Button(self, text="1", command=lambda: verifyLogin(1))
+        button1.grid(row=1, column=0)
+        button2 =   tk.Button(self, text="2", command=lambda: verifyLogin(2))
+        button2.grid(row=1, column=1)
+        button3 =   tk.Button(self, text="3", command=lambda: verifyLogin(3))
+        button3.grid(row=1,column=2)
+        button4 =   tk.Button(self, text="4", command=lambda: verifyLogin(4))
+        button4.grid(row=2,column=0)
+        button5 =   tk.Button(self, text="5", command=lambda: verifyLogin(5))
+        button5.grid(row=2, column=1)
+        button6 =   tk.Button(self, text="6", command=lambda: verifyLogin(6))
+        button6.grid(row=2,column=2)
+        button7 =   tk.Button(self, text="7", command=lambda: verifyLogin(7))
+        button7.grid(row=3,column=0)
+        button8 =   tk.Button(self, text="8", command=lambda: verifyLogin(8))
+        button8.grid(row=3,column=1)
+        button9 =   tk.Button(self, text="9", command=lambda: verifyLogin(9))
+        button9.grid(row=3,column=2)
+        button0 =   tk.Button(self, text="0", command=lambda: verifyLogin(0))
+        button0.grid(row=4,column=1)
+        buttonClear= tk.Button(self, text="Clear", command= lambda:verifyLogin("Clear"))
+        buttonClear.grid(row=4,column=0)
+        buttonLogin =   tk.Button(self, text="Log In", command=lambda: verifyLogin("Login"))#Will return a different response based on whether login worked later
+        buttonLogin.grid(row=4,column=2)
         
 class PageAfterLogin(tk.Frame):#placeholder name
     def __init__(self, parent, controller):
