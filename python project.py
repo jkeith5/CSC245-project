@@ -1,7 +1,6 @@
 import tkinter as tk
 
 FONT_TYPE=('Times New Roman', 12)
-loginSoFar=[]
 validLogin1= 524951
 validLogin2= 785412
 validLogin3= 225485
@@ -30,15 +29,14 @@ class POSSystem(tk.Tk):
 def printText(inside):
     print(inside)
 def verifyLogin(argument):##this is supposed to take the button pressed on LoginPage and verify account info
-    if argument == int:##this is to accept numbers
-        loginSoFar= loginSoFar.append(argument)##adding them to a list
-        list(loginSoFar)
-        if len(loginSoFar)==6:
-            for x in loginSoFar:##this turns the list into a singleline argument
-                singleLineLogin = (singleLineLogin*10) + int(loginSoFar[x])
-                print(singleLineLogin)
+    if isinstance(argument, int):##this is to accept numbers
+        loginSoFar= 0
+        loginSoFar = argument*10
+        singleLineLogin=loginSoFar + 
+        print(singleLineLogin)
+        print(loginSoFar)
                 
-    elif argument == type(str):##this is to accept clear/login buttons
+    elif isinstance(argument,str):##this is to accept clear/login buttons
         if argument == 'Login':
             if singleLineLogin == validLogin1 or singleLineLogin == validLogin2 or singleLineLogin== validLogin3:##checks the validity of entered data
                 controller.show_frame(PageAfterLogin)
