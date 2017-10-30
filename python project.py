@@ -4,7 +4,7 @@ FONT_TYPE=('Times New Roman', 12)
 validLogin1= 524951
 validLogin2= 785412
 validLogin3= 225485
-singleLineLogin=0
+
 
 class POSSystem(tk.Tk):
 
@@ -28,11 +28,22 @@ class POSSystem(tk.Tk):
 
 def printText(inside):
     print(inside)
-def verifyLogin(argument):##this is supposed to take the button pressed on LoginPage and verify account info
+global login
+login=[]
+def verifyLogin(argument):
     if isinstance(argument, int):##this is to accept numbers
-        loginSoFar= 0
+        login.append(argument)
+        list(login)
+        
+        
+        
+'''
+def verifyLogin(argument):##this is supposed to take the button pressed on LoginPage and verify account info
+    loginSoFar = 0
+    global singleLineLogin
+    if isinstance(argument, int):##this is to accept numbers
         loginSoFar = argument*10
-        singleLineLogin=loginSoFar + 
+        singleLineLogin+=loginSoFar
         print(singleLineLogin)
         print(loginSoFar)
                 
@@ -47,8 +58,9 @@ def verifyLogin(argument):##this is supposed to take the button pressed on Login
                 Errorbox.insert(END, "Incorrect login information, try again.")
                 controller.show_frame(LoginPage)
                 mainloop()
+                '''
 class LoginPage(tk.Frame):##login page
-
+    
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         label = tk.Label(self, text="Welcome, enter your employee number to login!",font=FONT_TYPE)##this just shows text, not a button or anything
