@@ -4,7 +4,7 @@ FONT_TYPE=('Times New Roman', 12)
 validLogin1= 524951
 validLogin2= 785412
 validLogin3= 225485
-singleLineLogin=0
+
 
 class POSSystem(tk.Tk):
 
@@ -28,11 +28,50 @@ class POSSystem(tk.Tk):
 
 def printText(inside):
     print(inside)
+def constructLogin(f):
+    """This function takes the int arguments and compiles it into a string"""
+    cache = {}
+    def memoizedf(x):
+        if x not in cache:
+            cache[x] = f(x)
+            for x in cache:
+                print(x)
+        if len(cache) == 6:
+            string =''
+            verifyLogin(int(string.join(cache[x])))
+cache = list()
+login = ''
+def verifyLogin(argument):
+    global cache
+    global login
+    global validLogin1,validLogin2,validLogin3
+    if isinstance(argument, int):
+        cache.append(str(argument))
+        if len(cache)==6:
+            login=''.join(cache)
+    elif isinstance(argument,str):
+        if argument == 'Login' and (login == validLogin1 or login== validLogin2, login==validLogin3):
+            controller.show_frame(PageAfterLogin)
+        elif argument == 'Clear':
+            cache=list()
+        else:
+            root =Tk()
+            Errorbox=Text(root,height=2,width=30)
+            Errorbox.pack()
+            Errorbox.insert(END, "Incorrect login information, try again.")
+            controller.show_frame(LoginPage)
+            mainloop()
+            
+        
+        
+        
+'''
 def verifyLogin(argument):##this is supposed to take the button pressed on LoginPage and verify account info
+    loginSoFar = 0
+    global singleLineLogin
     if isinstance(argument, int):##this is to accept numbers
-        loginSoFar= 0
         loginSoFar = argument*10
-        singleLineLogin=loginSoFar + 
+        singleLineLogin+=loginSoFar
         print(singleLineLogin)
         print(loginSoFar)
                 
@@ -47,13 +86,13 @@ def verifyLogin(argument):##this is supposed to take the button pressed on Login
                 Errorbox.insert(END, "Incorrect login information, try again.")
                 controller.show_frame(LoginPage)
                 mainloop()
+                '''
 class LoginPage(tk.Frame):##login page
-
+    
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         label = tk.Label(self, text="Welcome, enter your employee number to login!",font=FONT_TYPE)##this just shows text, not a button or anything
         label.grid(row=0, columnspan = 5, pady=10,padx=10)
-
         button1 =   tk.Button(self, text="1", command=lambda: verifyLogin(1))
         button1.grid(row=1, column=0)
         button2 =   tk.Button(self, text="2", command=lambda: verifyLogin(2))
@@ -65,7 +104,7 @@ class LoginPage(tk.Frame):##login page
         button5 =   tk.Button(self, text="5", command=lambda: verifyLogin(5))
         button5.grid(row=2, column=1)
         button6 =   tk.Button(self, text="6", command=lambda: verifyLogin(6))
-        button6.grid(row=2,column=2)
+        button6.grid(row=2, column=2)
         button7 =   tk.Button(self, text="7", command=lambda: verifyLogin(7))
         button7.grid(row=3,column=0)
         button8 =   tk.Button(self, text="8", command=lambda: verifyLogin(8))
