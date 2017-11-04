@@ -1,9 +1,10 @@
 import tkinter as tk
+from tkinter import *
 
 FONT_TYPE=('Times New Roman', 12)
-validLogin1= 524951
-validLogin2= 785412
-validLogin3= 225485
+validLogin1= '524951'
+validLogin2= '785412'
+validLogin3= '225485'
 cache = list()
 login = ''
 
@@ -29,7 +30,7 @@ class POSSystem(tk.Tk):
         frame.tkraise()
 
 class LoginPage(tk.Frame):##login page
-    
+    global cache,login,validLogin1,validLogin2,validLogin3
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         label = tk.Label(self, text="Welcome, enter your employee number to login!",font=FONT_TYPE)##this just shows text, not a button or anything
@@ -67,17 +68,22 @@ class LoginPage(tk.Frame):##login page
                 if len(cache)==6:
                     login=''.join(cache)
             elif isinstance(argument,str):
-                if argument == 'Login' and (login == validLogin1 or login== validLogin2, login==validLogin3):
-                    controller.show_frame(PageAfterLogin)
+                if argument == 'Login':
+                    if (login == validLogin1 or login== validLogin2 or login==validLogin3):
+                        controller.show_frame(PageAfterLogin)
+                    else:
+                        root = Tk()
+                        login=0
+                        cache=[]
+                        Errorbox = Text(root,height=2,width=30)
+                        Errorbox.pack()
+                        Errorbox.insert(END, "Incorrect login information, try again.")
+                        controller.show_frame(LoginPage)
+                        mainloop()
                 elif argument == 'Clear':
-                    cache=list()
-                else:
-                    root =Tk()
-                    Errorbox=Text(root,height=2,width=30)
-                    Errorbox.pack()
-                    Errorbox.insert(END, "Incorrect login information, try again.")
-                    controller.show_frame(LoginPage)
-                    mainloop()
+                    login=0
+                    cache=[]
+                
         
 class PageAfterLogin(tk.Frame):#placeholder name
     def __init__(self, parent, controller):
