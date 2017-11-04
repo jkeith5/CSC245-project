@@ -4,6 +4,8 @@ FONT_TYPE=('Times New Roman', 12)
 validLogin1= 524951
 validLogin2= 785412
 validLogin3= 225485
+cache = list()
+login = ''
 
 
 class POSSystem(tk.Tk):
@@ -26,67 +28,6 @@ class POSSystem(tk.Tk):
         frame = self.frames[controller]
         frame.tkraise()
 
-def printText(inside):
-    print(inside)
-def constructLogin(f):
-    """This function takes the int arguments and compiles it into a string"""
-    cache = {}
-    def memoizedf(x):
-        if x not in cache:
-            cache[x] = f(x)
-            for x in cache:
-                print(x)
-        if len(cache) == 6:
-            string =''
-            verifyLogin(int(string.join(cache[x])))
-cache = list()
-login = ''
-def verifyLogin(argument):
-    global cache
-    global login
-    global validLogin1,validLogin2,validLogin3
-    if isinstance(argument, int):
-        cache.append(str(argument))
-        if len(cache)==6:
-            login=''.join(cache)
-    elif isinstance(argument,str):
-        if argument == 'Login' and (login == validLogin1 or login== validLogin2, login==validLogin3):
-            controller.show_frame(PageAfterLogin)
-        elif argument == 'Clear':
-            cache=list()
-        else:
-            root =Tk()
-            Errorbox=Text(root,height=2,width=30)
-            Errorbox.pack()
-            Errorbox.insert(END, "Incorrect login information, try again.")
-            controller.show_frame(LoginPage)
-            mainloop()
-            
-        
-        
-        
-'''
-def verifyLogin(argument):##this is supposed to take the button pressed on LoginPage and verify account info
-    loginSoFar = 0
-    global singleLineLogin
-    if isinstance(argument, int):##this is to accept numbers
-        loginSoFar = argument*10
-        singleLineLogin+=loginSoFar
-        print(singleLineLogin)
-        print(loginSoFar)
-                
-    elif isinstance(argument,str):##this is to accept clear/login buttons
-        if argument == 'Login':
-            if singleLineLogin == validLogin1 or singleLineLogin == validLogin2 or singleLineLogin== validLogin3:##checks the validity of entered data
-                controller.show_frame(PageAfterLogin)
-            else:##if entered data is not correct, displays a text box.
-                root =Tk()
-                Errorbox=Text(root,height=2,width=30)
-                Errorbox.pack()
-                Errorbox.insert(END, "Incorrect login information, try again.")
-                controller.show_frame(LoginPage)
-                mainloop()
-                '''
 class LoginPage(tk.Frame):##login page
     
     def __init__(self, parent, controller):
@@ -115,8 +56,28 @@ class LoginPage(tk.Frame):##login page
         button0.grid(row=4,column=1)
         buttonClear= tk.Button(self, text="Clear", command= lambda:verifyLogin("Clear"))
         buttonClear.grid(row=4,column=0)
-        buttonLogin =   tk.Button(self, text="Log In", command=lambda: verifyLogin("Login"))#Will return a different response based on whether login worked later
+        buttonLogin =   tk.Button(self, text="Log In", command=lambda:verifyLogin("Login"))#Will return a different response based on whether login worked later
         buttonLogin.grid(row=4,column=2)
+        def verifyLogin(argument):
+            global cache
+            global login
+            global validLogin1,validLogin2,validLogin3
+            if isinstance(argument, int):
+                cache.append(str(argument))
+                if len(cache)==6:
+                    login=''.join(cache)
+            elif isinstance(argument,str):
+                if argument == 'Login' and (login == validLogin1 or login== validLogin2, login==validLogin3):
+                    controller.show_frame(PageAfterLogin)
+                elif argument == 'Clear':
+                    cache=list()
+                else:
+                    root =Tk()
+                    Errorbox=Text(root,height=2,width=30)
+                    Errorbox.pack()
+                    Errorbox.insert(END, "Incorrect login information, try again.")
+                    controller.show_frame(LoginPage)
+                    mainloop()
         
 class PageAfterLogin(tk.Frame):#placeholder name
     def __init__(self, parent, controller):
