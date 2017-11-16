@@ -41,29 +41,29 @@ class LoginPage(tk.Frame):##login page
         label = tk.Label(self, text="Welcome, enter your employee number to login!",font=FONT_TYPE)##this just shows text, not a button or anything
         label.grid(row=0, columnspan = 5, pady=10,padx=10)
         button1 =   tk.Button(self, text="1", command=lambda: verifyLogin(1))
-        button1.grid(row=1, column=0)
+        button1.grid(sticky="nsew",row=1, column=1)
         button2 =   tk.Button(self, text="2", command=lambda: verifyLogin(2))
-        button2.grid(row=1, column=1)
+        button2.grid(sticky="nsew",row=1, column=2)
         button3 =   tk.Button(self, text="3", command=lambda: verifyLogin(3))
-        button3.grid(row=1,column=2)
+        button3.grid(sticky="nsew",row=1,column=3)
         button4 =   tk.Button(self, text="4", command=lambda: verifyLogin(4))
-        button4.grid(row=2,column=0)
+        button4.grid(sticky="nsew",row=2,column=1)
         button5 =   tk.Button(self, text="5", command=lambda: verifyLogin(5))
-        button5.grid(row=2, column=1)
+        button5.grid(sticky="nsew",row=2, column=2)
         button6 =   tk.Button(self, text="6", command=lambda: verifyLogin(6))
-        button6.grid(row=2, column=2)
+        button6.grid(sticky="nsew",row=2, column=3)
         button7 =   tk.Button(self, text="7", command=lambda: verifyLogin(7))
-        button7.grid(row=3,column=0)
+        button7.grid(sticky="nsew",row=3,column=1)
         button8 =   tk.Button(self, text="8", command=lambda: verifyLogin(8))
-        button8.grid(row=3,column=1)
+        button8.grid(sticky="nsew",row=3,column=2)
         button9 =   tk.Button(self, text="9", command=lambda: verifyLogin(9))
-        button9.grid(row=3,column=2)
+        button9.grid(sticky="nsew",row=3,column=3)
         button0 =   tk.Button(self, text="0", command=lambda: verifyLogin(0))
-        button0.grid(row=4,column=1)
+        button0.grid(sticky="nsew",row=4,column=2)
         buttonClear= tk.Button(self, text="Clear", command= lambda:verifyLogin("Clear"))
-        buttonClear.grid(row=4,column=0)
+        buttonClear.grid(sticky="nsew",row=4,column=1)
         buttonLogin =   tk.Button(self, text="Log In", command=lambda:verifyLogin("Login"))#Will return a different response based on whether login worked later
-        buttonLogin.grid(row=4,column=2)
+        buttonLogin.grid(sticky="nsew",row=4,column=3)
         def verifyLogin(argument):
             global cache
             global login
@@ -109,12 +109,17 @@ class PageAfterLogin(tk.Frame):#Table Select Screen/Frame
 class TabCreatePage(tk.Frame):
     def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
-        buttons = ButtonFrame(self,controller)
-        buttons.grid(row=1)
+        self.labelContents= StringVar()
+        global tableNumber
+        buttons = TableCreateFrame(self,controller)
+        buttons.grid(row=1,rowspan=4, column=2)
+        self.labelContents.set('Table: '+tableNumber)
+        labelTabNumber =tk.Label(self, text = self.labelContents.get(),font = FONT_TYPE, bg='white')
+        labelTabNumber.grid(row=1,column=1)
         label = tk.Label(self,text="Select a Table Number",font=FONT_TYPE)
         label.grid(row=0,columnspan=200)
 
-class ButtonFrame(tk.Frame):
+class TableCreateFrame(tk.Frame):
     def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
         button1 =   tk.Button(self, text="1", command=lambda: constructSingleLine(1))
@@ -147,14 +152,22 @@ class ButtonFrame(tk.Frame):
             global tableNumber
             if isinstance(argument,int):
                 cache2.append(str(argument))
-                if len(cache2)==2:
-                    tableNumber=''.join(cache2)
+                tableNumber=''.join(cache2)
+                TabCreatePage.labelContents.set(tableNumber)
             elif isinstance(argument,str):
-                pass
+                if argument == 'done':
+                     Table(tableNumber)#goes to Table class then to order screen from here
+                elif argument == 'clear':
+                    cache2=0
+                    tableNumber=0
+                    controller.show_frame(TabCreatePage)
+                    
+
             
-class Table(tk.Frame):
-    def __init__(self,parent,number,controller):
+class Table(tk.Button):
+    def __init__(self,parent,controller,number):
         contents = StringVar()
-        pass
+        contents.set(number)
+        
 app=POSSystem()
 app.mainloop()
