@@ -9,6 +9,7 @@ cache = list()
 cache2=list()
 tableNumber=''
 login = ''
+tableList=[None]*101
 
 
 class POSSystem(tk.Tk):
@@ -93,31 +94,39 @@ class LoginPage(tk.Frame):##login page
 class PageAfterLogin(tk.Frame):#Table Select Screen/Frame
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        label = tk.Label(self, text="Create a new table!",font=FONT_TYPE)
+        label = tk.Label(self, text="Select",font=FONT_TYPE)
         label.grid(row=0, columnspan=2, pady=5, padx=10)
-        buttonBack = tk.Button(self, text ="Return to Log In Screen", command = lambda: self.NumberDelete(controller))
-        buttonBack.grid(row=1,column=1)
+        buttonBack = tk.Button(self, text ="Logout", command = lambda: self.NumberDelete(controller))
+        buttonBack.grid(row=11,column=1)
         buttonTable = tk.Button(self,text ="Create new table", command = lambda: controller.show_frame(TabCreatePage))
-        buttonTable.grid(row=1,column=2)
+        buttonTable.grid(row=10,column=1)
+        buttons=[]
+        for table in tableList:
+            if not table == None:
+                result = table%5
+                buttons[table]= tk.Button(self,text=str(table),command = lambda: None)
+                buttons[table].grid(row=( 0 + result if not result == 0 else result),column= (result if not result == 0 else 0+result))
         
     def NumberDelete(self, controller):
         global cache, login
-        cache = 0
+        cache = []
         login = 0
         controller.show_frame(LoginPage)
-
+class buttonConstruct(tk.Frame):
+    def __init__(self,parent,controller):
+        tk.Frame.__init__(self,parent)
 class TabCreatePage(tk.Frame):
     def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
-        self.labelContents= StringVar()
+        labelContents= ''
         global tableNumber
         buttons = TableCreateFrame(self,controller)
         buttons.grid(row=1,rowspan=4, column=2)
-        self.labelContents.set('Table: '+tableNumber)
-        labelTabNumber =tk.Label(self, text = self.labelContents.get(),font = FONT_TYPE, bg='white')
+        labelTabNumber =tk.Label(self, text = 'Number: ',font = FONT_TYPE, bg='white')
         labelTabNumber.grid(row=1,column=1)
+        labelNote= tk.Label(self,text='*Note: Table number cannot exceed 100*',font = FONT_TYPE)
         label = tk.Label(self,text="Select a Table Number",font=FONT_TYPE)
-        label.grid(row=0,columnspan=200)
+        label.grid(row=0,columnspan=3)
 
 class TableCreateFrame(tk.Frame):
     def __init__(self,parent,controller):
@@ -149,25 +158,32 @@ class TableCreateFrame(tk.Frame):
 
         def constructSingleLine(argument):
             global cache2
-            global tableNumber
+            global tableNumber,tableList
             if isinstance(argument,int):
                 cache2.append(str(argument))
                 tableNumber=''.join(cache2)
-                TabCreatePage.labelContents.set(tableNumber)
+                
             elif isinstance(argument,str):
                 if argument == 'done':
-                     Table(tableNumber)#goes to Table class then to order screen from here
+                    tableList[int(tableNumber)]=(Table(parent,controller,number=tableNumber))#goes to Table class then to order screen from here
+                    controller.show_frame(PageAfterLogin)
+                    tableNumber=0
+                    cache2=[]
                 elif argument == 'clear':
-                    cache2=0
+                    cache2=[]
                     tableNumber=0
                     controller.show_frame(TabCreatePage)
-                    
-
-            
+class OrderPage(tk.Frame):
+    def __init__(self,parent,controller):
+        tk.Frame.__init__()
+        
 class Table(tk.Button):
     def __init__(self,parent,controller,number):
-        contents = StringVar()
-        contents.set(number)
-        
+        tk.Button.__init__(self,text=number,command=lambda: controller.show_frame(OrderPage))
+        self.pack()
+        self.number= number
+        self.order= list()
+    def addToOrder(self, parent, plate):
+        self.order.append(plate)
 app=POSSystem()
 app.mainloop()
