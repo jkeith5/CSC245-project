@@ -112,9 +112,6 @@ class PageAfterLogin(tk.Frame):#Table Select Screen/Frame
         cache = []
         login = 0
         controller.show_frame(LoginPage)
-class buttonConstruct(tk.Frame):
-    def __init__(self,parent,controller):
-        tk.Frame.__init__(self,parent)
 class TabCreatePage(tk.Frame):
     def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
@@ -165,10 +162,22 @@ class TableCreateFrame(tk.Frame):
                 
             elif isinstance(argument,str):
                 if argument == 'done':
-                    tableList[int(tableNumber)]=(Table(parent,controller,number=tableNumber))#goes to Table class then to order screen from here
-                    controller.show_frame(PageAfterLogin)
-                    tableNumber=0
-                    cache2=[]
+                    try:
+                        tableList[int(tableNumber)]=(Table(parent,controller,number=tableNumber))#goes to Table class then to order screen from here
+                        controller.show_frame(PageAfterLogin)
+                        tableNumber=0
+                        cache2=[]
+                    except:
+                        root = Tk()
+                        cache=[]
+                        Errorbox = Text(root,height=2,width=30)
+                        Errorbox.pack()
+                        Errorbox.insert(END, "Table number must be between 1-100.")
+                        cache2=[]
+                        tableNumber=0
+                        mainloop()
+                        
+                        raise IndexError("Table number must be between 1-100.")
                 elif argument == 'clear':
                     cache2=[]
                     tableNumber=0
@@ -179,11 +188,14 @@ class OrderPage(tk.Frame):
         
 class Table(tk.Button):
     def __init__(self,parent,controller,number):
-        tk.Button.__init__(self,text=number,command=lambda: controller.show_frame(OrderPage))
-        self.pack()
         self.number= number
+        if int(number) > 0 and int(number) < 101:
+            tk.Button.__init__(self,text=number,command=lambda: controller.show_frame(OrderPage))
+            self.pack()
         self.order= list()
     def addToOrder(self, parent, plate):
         self.order.append(plate)
+
+
 app=POSSystem()
 app.mainloop()
