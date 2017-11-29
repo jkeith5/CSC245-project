@@ -22,7 +22,7 @@ class POSSystem(tk.Tk):
         container.grid_rowconfigure(0, weight =1)##first number is the size, weight is priority
         container.grid_columnconfigure(0,weight=1)
         self.frames = {}##dict of frames to house all the windows in the program
-        for F in (LoginPage, PageAfterLogin, TabCreatePage): #F being the current frame
+        for F in (LoginPage, PageAfterLogin, TabCreatePage, OrderPage): #F being the current frame
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -117,18 +117,18 @@ class TabCreatePage(tk.Frame):
         tk.Frame.__init__(self,parent)
         labelContents= ''
         global tableNumber
-        buttons = TableCreateFrame(self,controller)
+        #labelTabNumber =tk.Label(self, text = 'Number: ',font = FONT_TYPE, bg='white')
+        buttons = TableCreateFrame(self,controller,labelTabNumber)
         buttons.grid(row=1,rowspan=4, column=2)
-        labelTabNumber =tk.Label(self, text = 'Number: ',font = FONT_TYPE, bg='white')
-        labelTabNumber.grid(row=1,column=1)
+        #labelTabNumber.grid(row=1,column=1)
         labelNote= tk.Label(self,text='*Note: Table number cannot exceed 100*',font = FONT_TYPE)
         label = tk.Label(self,text="Select a Table Number",font=FONT_TYPE)
         label.grid(row=0,columnspan=3)
 
 class TableCreateFrame(tk.Frame):
-    def __init__(self,parent,controller):
+    def __init__(self,parent,controller,labelTabNumber):
         tk.Frame.__init__(self,parent)
-        button1 =   tk.Button(self, text="1", command=lambda: constructSingleLine(1))
+        button1 =   tk.Button(self, text="1", command=lambda: constructSingleLine(1,labelTabNumber))
         button1.grid(row=1, column=0)
         button2 =   tk.Button(self, text="2", command=lambda: constructSingleLine(2))
         button2.grid(row=1, column=1)
@@ -153,17 +153,19 @@ class TableCreateFrame(tk.Frame):
         buttonDone=tk.Button(self,text="Enter",command = lambda: constructSingleLine("done"))
         buttonDone.grid(row=4,column=2)
 
-        def constructSingleLine(argument):
+        def constructSingleLine(argument,labelTabNumber):
             global cache2
             global tableNumber,tableList
             if isinstance(argument,int):
                 cache2.append(str(argument))
                 tableNumber=''.join(cache2)
+                #labelTabNumber['text']= tableNumber
+                #labelTabNumber.pack()
                 
             elif isinstance(argument,str):
                 if argument == 'done':
                     try:
-                        tableList[int(tableNumber)]=(Table(parent,controller,number=tableNumber))#goes to Table class then to order screen from here
+                        tableList[int(tableNumber)]=(Table(parent,controller = controller,number=tableNumber))#goes to Table class then to order screen from here
                         controller.show_frame(PageAfterLogin)
                         tableNumber=0
                         cache2=[]
@@ -199,13 +201,13 @@ class OrderPage(tk.Frame):#Order Page after table is created
         tk.Frame.__init__(self,parent)
         labelMenuTitle = tk.Label(self, text = 'Menu',font = FONT_TYPE)
         labelMenuTitle.grid(row=1,column=1)
-        button1 = tk.Button(self, text='Entrees', command= lambda: menuChanger(frame = 'entrees'))#Path to appropriate menu
+        button1 = tk.Button(self, text='Entrees', command= lambda: self.menuChanger(frame = 'entrees'))#Path to appropriate menu
         button1.grid(row=2, column=1)
-        button2 = tk.Button(self, text='Kids', command= lambda: menuChanger(frame='kids'))#Path to appropriate menu
+        button2 = tk.Button(self, text='Kids', command= lambda: self.menuChanger(frame='kids'))#Path to appropriate menu
         button2.grid(row=3, column=1)
-        button3 = tk.Button(self, text='Sides', command= lambda: menuChanger(frame='sides'))#Path to appropriate menu
+        button3 = tk.Button(self, text='Sides', command= lambda: self.menuChanger(frame='sides'))#Path to appropriate menu
         button3.grid(row=4, column=1)
-        button4 = tk.Button(self, text='Drinks', command= lambda: menuChanger(frame='drinks'))#Path to appropriate menu
+        button4 = tk.Button(self, text='Drinks', command= lambda: self.menuChanger(frame='drinks'))#Path to appropriate menu
         button4.grid(row=5, column=1)
         buttonBack = tk.Button(self, text ="Return", command = lambda: controller.show_frame(PageAfterLogin))
         buttonBack.grid(row=0,column=1)
@@ -222,8 +224,25 @@ class OrderPage(tk.Frame):#Order Page after table is created
         elif frame == 'drinks':
             menuframe= DrinksMenu()
             menuframe.grid(rowspan=4, column= 100, columnspan=100)
-        
-        
+class EntreeMenu(tk.Frame):
+    def __init__(self,parent,controller):
+        tk.Frame.__init__(self,parent)
+        ### adult plates
+
+class KidsMenu(tk.Frame):
+    def __init__(self,parent,controller):
+        tk.Frame.__init__(self,parent)
+        ###kids plates
+class SidesMenu(tk.Frame):
+    def __init__(self,parent,controller):
+        tk.Frame.__init__(self,parent)
+        ### sides
+class DrinksMenu(tk.Frame):
+    def __init__(self,parent,controller):
+        tk.Frame.__init__(self,parent)
+        ###drinks
+
+
 
 app=POSSystem()
 app.mainloop()
