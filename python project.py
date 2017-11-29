@@ -182,9 +182,7 @@ class TableCreateFrame(tk.Frame):
                     cache2=[]
                     tableNumber=0
                     controller.show_frame(TabCreatePage)
-class OrderPage(tk.Frame):
-    def __init__(self,parent,controller):
-        tk.Frame.__init__()
+
         
 class Table(tk.Button):
     def __init__(self,parent,controller,number):
@@ -196,6 +194,36 @@ class Table(tk.Button):
     def addToOrder(self, parent, plate):
         self.order.append(plate)
 
+class OrderPage(tk.Frame):#Order Page after table is created
+    def __init__(self,parent,controller):
+        tk.Frame.__init__(self,parent)
+        labelMenuTitle = tk.Label(self, text = 'Menu',font = FONT_TYPE)
+        labelMenuTitle.grid(row=1,column=1)
+        button1 = tk.Button(self, text='Entrees', command= lambda: menuChanger(frame = 'entrees'))#Path to appropriate menu
+        button1.grid(row=2, column=1)
+        button2 = tk.Button(self, text='Kids', command= lambda: menuChanger(frame='kids'))#Path to appropriate menu
+        button2.grid(row=3, column=1)
+        button3 = tk.Button(self, text='Sides', command= lambda: menuChanger(frame='sides'))#Path to appropriate menu
+        button3.grid(row=4, column=1)
+        button4 = tk.Button(self, text='Drinks', command= lambda: menuChanger(frame='drinks'))#Path to appropriate menu
+        button4.grid(row=5, column=1)
+        buttonBack = tk.Button(self, text ="Return", command = lambda: controller.show_frame(PageAfterLogin))
+        buttonBack.grid(row=0,column=1)
+    def menuChanger(self,controller, frame):
+        if frame == 'entrees':
+            menuframe= EntreeMenu()
+            menuframe.grid(row=1,rowspan=4, column= 100, columnspan=100)
+        elif frame == 'kids':
+            menuframe = KidsMenu()
+            menuframe.grid(rowspan=4, column= 100, columnspan=100)
+        elif frame == 'sides':
+            menuframe = SidesMenu()
+            menuframe.grid(rowspan=4, column= 100, columnspan=100)
+        elif frame == 'drinks':
+            menuframe= DrinksMenu()
+            menuframe.grid(rowspan=4, column= 100, columnspan=100)
+        
+        
 
 app=POSSystem()
 app.mainloop()
