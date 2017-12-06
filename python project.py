@@ -28,14 +28,15 @@ class POSSystem(tk.Tk):
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
         self.show_frame(LoginPage)
-        
+
 
         
 
     def show_frame(self, controller):
         frame = self.frames[controller]
         frame.tkraise()
-
+        
+"""This class creates the login page and numbers in a grid to allow the user to enter their own employee number which is then validated to one of the three only working numbers"""
 class LoginPage(tk.Frame):##login page
     global cache,login,validLogin1,validLogin2,validLogin3
     def __init__(self, parent, controller):
@@ -91,8 +92,8 @@ class LoginPage(tk.Frame):##login page
                     login=0
                     cache=[]
                 
-        
-class PageAfterLogin(tk.Frame):#Table Select Screen/Frame
+"""This class creates the page after login where you are given the options to either logout or create a table"""
+class PageAfterLogin(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         label = tk.Label(self, text="Select",font=FONT_TYPE)
@@ -113,19 +114,22 @@ class PageAfterLogin(tk.Frame):#Table Select Screen/Frame
         cache = []
         login = 0
         controller.show_frame(LoginPage)
+        
+"""The table creation page prompts the user to enter the table number and creates a button to access the page"""
 class TabCreatePage(tk.Frame):
     def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
         labelContents= ''
         global tableNumber
-        labelTabNumber =tk.Label(self, text = 'Number: ',font = FONT_TYPE, bg='white')
+        labelTabNumber =tk.Label(self, text = 'Number: ',font = FONT_TYPE)
         buttons = TableCreateFrame(self,controller)
         buttons.grid(row=1,rowspan=4, column=2)
         labelTabNumber.grid(row=1,column=1)
         labelNote= tk.Label(self,text='*Note: Table number cannot exceed 100*',font = FONT_TYPE)
         label = tk.Label(self,text="Select a Table Number",font=FONT_TYPE)
         label.grid(row=0,columnspan=3)
-
+        
+"""Creates the frame with buttons in a grid to let the user enter the table number"""
 class TableCreateFrame(tk.Frame):
     def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
@@ -184,7 +188,7 @@ class TableCreateFrame(tk.Frame):
                     tableNumber=0
                     controller.show_frame(TabCreatePage)
 
-        
+"""Creates a button that directs you to the specific table"""
 class Table(tk.Button):
     def __init__(self,parent,controller,number):
         self.number= number
@@ -200,38 +204,31 @@ class Table(tk.Button):
         self._order.update(plate)
         print(str(plate.keys())[12:-3])
         self._orderlist+=str(plate.keys())[12:-3] + ', '
-        self._price+=float(str(plate.values())[13:-2])
     def order(self,_order):
         return _order
-    def closeOrder(self, payment):
-        
-        print('Subtotal: ' + str(self._price))
-        print('Tax: '+ str(self._price*.0825))
-        print('Total: '+ str(self._price*1.0825))
-        self._price-= payment
-        print('Balance: ' +str(self._price))
-        
-
+    
+"""Creates the buttons that allow for menu navigation to each of the respected menus"""
 class OrderPage(tk.Frame):#Order Page after table is created
     def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
         labelMenuTitle = tk.Label(self, text = 'Menu',font = FONT_TYPE)
-        labelMenuTitle.grid(row=1,column=1)
+        labelMenuTitle.grid(row=2,column=1)
         frame=''
         button1 = tk.Button(self, text='Entrees', command= lambda: controller.show_frame(EntreeMenu))#Path to appropriate menu
-        button1.grid(row=2, column=1)
+        button1.grid(row=3, column=1)
         button2 = tk.Button(self, text='Kids', command= lambda: controller.show_frame(KidsMenu))#Path to appropriate menu
-        button2.grid(row=2, column=2)
+        button2.grid(row=3, column=2)
         button3 = tk.Button(self, text='Sides', command= lambda: controller.show_frame(SidesMenu))#Path to appropriate menu
-        button3.grid(row=2, column=3)
+        button3.grid(row=3, column=3)
         button4 = tk.Button(self, text='Drinks', command= lambda: controller.show_frame(DrinksMenu))#Path to appropriate menu
-        button4.grid(row=2, column=4)
+        button4.grid(row=3, column=4)
         buttonBack = tk.Button(self, text ="Return", command = lambda: controller.show_frame(PageAfterLogin))
         buttonBack.grid(row=0,column=1)
         buttonCurrentOrder= tk.Button(self,text='Review Order', command=lambda: controller.show_frame(OrderSummary))
         buttonCurrentOrder.grid(row=0, column=2)
         buttonClose= tk.Button(self, text='Close ticket', command = lambda: controller.show_frame(TicketClose))
         
+"""Creates the entree menu and returns the choices made"""
 class EntreeMenu(tk.Frame):
     def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
@@ -264,7 +261,8 @@ class EntreeMenu(tk.Frame):
         button0.grid(row=5,column=3)
         buttonBack = tk.Button(self, text ="Return", command = lambda: controller.show_frame(OrderPage))
         buttonBack.grid(row=6,column=2)
-
+        
+"""Creates the kids menu and returns the choices made"""
 class KidsMenu(tk.Frame):
     def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
@@ -297,7 +295,8 @@ class KidsMenu(tk.Frame):
         button0.grid(row=5,column=3)
         buttonBack = tk.Button(self, text ="Return", command = lambda: controller.show_frame(OrderPage))
         buttonBack.grid(row=6,column=2)
-
+        
+"""Creates the sides menu and returns the choices made"""
 class SidesMenu(tk.Frame):
     def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
@@ -324,7 +323,8 @@ class SidesMenu(tk.Frame):
         button9.grid(row=4,column=3)
         buttonBack = tk.Button(self, text ="Return", command = lambda: controller.show_frame(OrderPage))
         buttonBack.grid(row=6,column=2)
-
+        
+"""Creates the drinks menu and returns the choices made"""
 class DrinksMenu(tk.Frame):
     def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
@@ -357,7 +357,8 @@ class DrinksMenu(tk.Frame):
         button0.grid(row=5,column=3)
         buttonBack = tk.Button(self, text ="Return", command = lambda: controller.show_frame(OrderPage))
         buttonBack.grid(row=6,column=2)
-
+        
+"""Gives an overview of the the contents of what the table has ordered"""
 class OrderSummary(tk.Frame):
     def __init__ (self,parent,controller):
         tk.Frame.__init__(self,parent)
@@ -365,11 +366,11 @@ class OrderSummary(tk.Frame):
         labelTitle = tk.Label(self, text='Order overview')
         labelTitle.grid(row=1, column=1, columnspan=100)
         labelPlates = tk.Label(self,text='Plates')
-        labelPlates.grid(row=2,column=0)
+        labelPlates.grid(row=2,column=0)   
         labelPlateall= tk.Label(self,text='') 
         labelPlateall.grid(row=3, column=0)
             
-
+"""Presents the user with the total price and prompts the use to either go back or create a new table"""
 class SubmissionPage(tk.Button):
     def _init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
