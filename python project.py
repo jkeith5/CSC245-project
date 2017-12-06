@@ -195,10 +195,11 @@ class Table(tk.Button):
             self.pack()
         self._order= dict()
         self._price=0
+        self._orderlist=''
     def addToOrder(self, plate):
         self._order.update(plate)
-        print(str(plate.keys()))
-        
+        print(str(plate.keys())[12:-3])
+        self._orderlist+=str(plate.keys())[12:-3] + ', '
     def order(self,_order):
         return _order
 
@@ -355,11 +356,8 @@ class OrderSummary(tk.Frame):
         labelTitle = tk.Label(self, text='Order overview')
         labelTitle.grid(row=1, column=1, columnspan=100)
         labelPlates = tk.Label(self,text='Plates')
-        labelPlates.grid(row=2,column=0)
-        keys= list(tableList[currentTable]._order.keys())
-        values= list(tableList[currentTable]._order.values())
-        stringPlates=''.join(keys)    
-        labelPlateall= tk.Label(self,text=stringPlates) 
+        labelPlates.grid(row=2,column=0)   
+        labelPlateall= tk.Label(self,text='') 
         labelPlateall.grid(row=3, column=0)
             
 
