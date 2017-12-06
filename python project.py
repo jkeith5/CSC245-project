@@ -28,7 +28,7 @@ class POSSystem(tk.Tk):
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
         self.show_frame(LoginPage)
-
+        
 
         
 
@@ -200,8 +200,17 @@ class Table(tk.Button):
         self._order.update(plate)
         print(str(plate.keys())[12:-3])
         self._orderlist+=str(plate.keys())[12:-3] + ', '
+        self._price+=float(str(plate.values())[13:-2])
     def order(self,_order):
         return _order
+    def closeOrder(self, payment):
+        
+        print('Subtotal: ' + str(self._price))
+        print('Tax: '+ str(self._price*.0825))
+        print('Total: '+ str(self._price*1.0825))
+        self._price-= payment
+        print('Balance: ' +str(self._price))
+        
 
 class OrderPage(tk.Frame):#Order Page after table is created
     def __init__(self,parent,controller):
@@ -356,7 +365,7 @@ class OrderSummary(tk.Frame):
         labelTitle = tk.Label(self, text='Order overview')
         labelTitle.grid(row=1, column=1, columnspan=100)
         labelPlates = tk.Label(self,text='Plates')
-        labelPlates.grid(row=2,column=0)   
+        labelPlates.grid(row=2,column=0)
         labelPlateall= tk.Label(self,text='') 
         labelPlateall.grid(row=3, column=0)
             
