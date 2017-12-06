@@ -4,7 +4,7 @@ from tkinter import *
 FONT_TYPE=('Times New Roman', 12)
 validLogin1= '524951'
 validLogin2= '785412'
-validLogin3= '225485'
+validLogin3= '770894'
 cache = list()
 cache2=list()
 tableNumber=''
@@ -23,7 +23,7 @@ class POSSystem(tk.Tk):
         container.grid_rowconfigure(0, weight =1)##first number is the size, weight is priority
         container.grid_columnconfigure(0,weight=1)
         self.frames = {}##dict of frames to house all the windows in the program
-        for F in (LoginPage, PageAfterLogin, TabCreatePage, OrderPage): #F being the current frame
+        for F in (LoginPage, PageAfterLogin, TabCreatePage, OrderPage, EntreeMenu, KidsMenu, DrinksMenu, SidesMenu, OrderSummary): #F being the current frame
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -129,7 +129,7 @@ class TabCreatePage(tk.Frame):
 class TableCreateFrame(tk.Frame):
     def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
-        button1 =   tk.Button(self, text="1", command=lambda: constructSingleLine(1,labelTabNumber))
+        button1 =   tk.Button(self, text="1", command=lambda: constructSingleLine(1))
         button1.grid(row=1, column=0)
         button2 =   tk.Button(self, text="2", command=lambda: constructSingleLine(2))
         button2.grid(row=1, column=1)
@@ -193,9 +193,14 @@ class Table(tk.Button):
             tk.Button.__init__(self,text=number,command=lambda: controller.show_frame(OrderPage))
             currentTable=int(number)
             self.pack()
-        self.order= list()
+        self._order= dict()
+        self._price=0
     def addToOrder(self, plate):
-        self.order.append(plate)
+        self._order.update(plate)
+        print(str(plate.keys()))
+        
+    def order(self,_order):
+        return _order
 
 class OrderPage(tk.Frame):#Order Page after table is created
     def __init__(self,parent,controller):
@@ -203,34 +208,20 @@ class OrderPage(tk.Frame):#Order Page after table is created
         labelMenuTitle = tk.Label(self, text = 'Menu',font = FONT_TYPE)
         labelMenuTitle.grid(row=1,column=1)
         frame=''
-        button1 = tk.Button(self, text='Entrees', command= lambda: self.changeFrame('entrees'))#Path to appropriate menu
+        button1 = tk.Button(self, text='Entrees', command= lambda: controller.show_frame(EntreeMenu))#Path to appropriate menu
         button1.grid(row=2, column=1)
-        button2 = tk.Button(self, text='Kids', command= lambda: self.changeFrame('kids'))#Path to appropriate menu
+        button2 = tk.Button(self, text='Kids', command= lambda: controller.show_frame(KidsMenu))#Path to appropriate menu
         button2.grid(row=2, column=2)
-        button3 = tk.Button(self, text='Sides', command= lambda: self.changeFrame('sides'))#Path to appropriate menu
+        button3 = tk.Button(self, text='Sides', command= lambda: controller.show_frame(SidesMenu))#Path to appropriate menu
         button3.grid(row=2, column=3)
-        button4 = tk.Button(self, text='Drinks', command= lambda: self.changeFrame(frame='drinks'))#Path to appropriate menu
+        button4 = tk.Button(self, text='Drinks', command= lambda: controller.show_frame(DrinksMenu))#Path to appropriate menu
         button4.grid(row=2, column=4)
         buttonBack = tk.Button(self, text ="Return", command = lambda: controller.show_frame(PageAfterLogin))
         buttonBack.grid(row=0,column=1)
-        menuframe= MenuChanger(parent=parent,controller=controller,frame=frame)
-        menuframe.grid(rowspan=4,column=100,columnspan=100)
-    def changeFrame(self,frame):
-        self.frame = frame
-class MenuChanger(tk.Frame):
-    def __init__(self,parent,controller,frame):
-        tk.Frame.__init__(self,parent)
-        if frame == 'entrees':
-            menuframe= EntreeMenu(controller,tableNumber)
-        elif frame == 'kids':
-            menuframe = KidsMenu(controller,tableNumber)
-            menuframe.grid(rowspan=4, column= 100, columnspan=100)
-        elif frame == 'sides':
-            menuframe = SidesMenu(controller,tableNumber)
-            menuframe.grid(rowspan=4, column= 100, columnspan=100)
-        elif frame == 'drinks':
-            menuframe= DrinksMenu(controller,tableNumber)
-            menuframe.grid(rowspan=4, column= 100, columnspan=100)
+        buttonCurrentOrder= tk.Button(self,text='Review Order', command=lambda: controller.show_frame(OrderSummary))
+        buttonCurrentOrder.grid(row=0, column=2)
+        buttonClose= tk.Button(self, text='Close ticket', command = lambda: controller.show_frame(TicketClose))
+        
 class EntreeMenu(tk.Frame):
     def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
@@ -265,95 +256,124 @@ class EntreeMenu(tk.Frame):
         buttonBack.grid(row=6,column=2)
 
 class KidsMenu(tk.Frame):
-    def __init__(self,parent,controller,tableNumber):
+    def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
+        global tableList, currentTable
         labelDrinkTitle = tk.Label(self, text = 'Kids Entrees',font = FONT_TYPE)
         labelDrinkTitle.grid(row=1,column=2)
-        button1 =   tk.Button(self, text="Kid Ribs", command=lambda: tableList[tableNumber].addToOrder({'KidRib':6.99}))
+        button1 =   tk.Button(self, text="Kid Ribs", command=lambda: tableList[currentTable].addToOrder({'KidRib':6.99}))
         button1.grid(row=2, column=1)
-        button2 =   tk.Button(self, text="Kid Pork", command=lambda: tableList[tableNumber].addToOrder({'KidPork':5.99}))
+        button2 =   tk.Button(self, text="Kid Pork", command=lambda: tableList[currentTable].addToOrder({'KidPork':5.99}))
         button2.grid(row=2, column=2)
-        button3 =   tk.Button(self, text="Kid Beef", command=lambda: tableList[tableNumber].addToOrder({'KidBeef':5.99}))
+        button3 =   tk.Button(self, text="Kid Beef", command=lambda: tableList[currentTable].addToOrder({'KidBeef':5.99}))
         button3.grid(row=2,column=3)
-        button4 =   tk.Button(self, text="Kid Turkey", command=lambda: tableList[tableNumber].addToOrder({'KidTurkey':6.99}))
+        button4 =   tk.Button(self, text="Kid Turkey", command=lambda: tableList[currentTable].addToOrder({'KidTurkey':6.99}))
         button4.grid(row=3,column=1)
-        button5 =   tk.Button(self, text="Kid Sausage", command=lambda: tableList[tableNumber].addToOrder({'KidSausage':5.99}))
+        button5 =   tk.Button(self, text="Kid Sausage", command=lambda: tableList[currentTable].addToOrder({'KidSausage':5.99}))
         button5.grid(row=3, column=2)
-        button6 =   tk.Button(self, text="Grilled Cheese", command=lambda: tableList[tableNumber].addToOrder({'GrilledCheese':5.49}))
+        button6 =   tk.Button(self, text="Grilled Cheese", command=lambda: tableList[currentTable].addToOrder({'GrilledCheese':5.49}))
         button6.grid(row=3, column=3)
-        button7 =   tk.Button(self, text="Pork 'n Beans", command=lambda: tableList[tableNumber].addToOrder({"Pork'nBeans":5.99}))
+        button7 =   tk.Button(self, text="Pork 'n Beans", command=lambda: tableList[currentTable].addToOrder({"Pork'nBeans":5.99}))
         button7.grid(row=4,column=1)
-        button8 =   tk.Button(self, text="Hotdog", command=lambda: tableList[tableNumber].addToOrder({'Hotdog':5.49}))
+        button8 =   tk.Button(self, text="Hotdog", command=lambda: tableList[currentTable].addToOrder({'Hotdog':5.49}))
         button8.grid(row=4,column=2)
-        button9 =   tk.Button(self, text="Chicken Tenders", command=lambda: tableList[tableNumber].addToOrder({'Tenders':5.99}))
+        button9 =   tk.Button(self, text="Chicken Tenders", command=lambda: tableList[currentTable].addToOrder({'Tenders':5.99}))
         button9.grid(row=4,column=3)
-        button0 =   tk.Button(self, text="Kid Chili", command=lambda: tableList[tableNumber].addToOrder({'KidChili':5.99}))
+        button0 =   tk.Button(self, text="Kid Chili", command=lambda: tableList[currentTable].addToOrder({'KidChili':5.99}))
         button0.grid(row=5,column=1)
-        button0 =   tk.Button(self, text="Kid Pork Sandwich", command=lambda: tableList[tableNumber].addToOrder({'KidPorkSand':4.49}))
+        button0 =   tk.Button(self, text="Kid Pork Sandwich", command=lambda: tableList[currentTable].addToOrder({'KidPorkSand':4.49}))
         button0.grid(row=5,column=2)
-        button0 =   tk.Button(self, text="Kid Turkey Sandwich", command=lambda: tableList[tableNumber].addToOrder({'KidTurkSand':4.99}))
+        button0 =   tk.Button(self, text="Kid Turkey Sandwich", command=lambda: tableList[currentTable].addToOrder({'KidTurkSand':4.99}))
         button0.grid(row=5,column=3)
         buttonBack = tk.Button(self, text ="Return", command = lambda: controller.show_frame(OrderPage))
         buttonBack.grid(row=6,column=2)
 
 class SidesMenu(tk.Frame):
-    def __init__(self,parent,controller,tableNumber):
+    def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
+        global tableList, currentTable
         labelDrinkTitle = tk.Label(self, text = 'Sides',font = FONT_TYPE)
         labelDrinkTitle.grid(row=1,column=2)
-        button1 =   tk.Button(self, text="Baked Beans", command=lambda: tableList[tableNumber].addToOrder({'Bakedbeans':0}))
+        button1 =   tk.Button(self, text="Baked Beans", command=lambda: tableList[currentTable].addToOrder({'Bakedbeans':0}))
         button1.grid(row=2, column=1)
-        button2 =   tk.Button(self, text="Green Beans", command=lambda: tableList[tableNumber].addToOrder({'GreenBeans':0}))
+        button2 =   tk.Button(self, text="Green Beans", command=lambda: tableList[currentTable].addToOrder({'GreenBeans':0}))
         button2.grid(row=2, column=2)
-        button3 =   tk.Button(self, text="Corn", command=lambda: tableList[tableNumber].addToOrder({'Corn':0}))
+        button3 =   tk.Button(self, text="Corn", command=lambda: tableList[currentTable].addToOrder({'Corn':0}))
         button3.grid(row=2,column=3)
-        button4 =   tk.Button(self, text="AppleSauce", command=lambda: tableList[tableNumber].addToOrder({'Applesauce':0}))
+        button4 =   tk.Button(self, text="AppleSauce", command=lambda: tableList[currentTable].addToOrder({'Applesauce':0}))
         button4.grid(row=3,column=1)
-        button5 =   tk.Button(self, text="Fries", command=lambda: tableList[tableNumber].addToOrder({'Fries':0}))
+        button5 =   tk.Button(self, text="Fries", command=lambda: tableList[currentTable].addToOrder({'Fries':0}))
         button5.grid(row=3, column=2)
-        button6 =   tk.Button(self, text="Fried Okra", command=lambda: tableList[tableNumber].addToOrder({'Okra':0}))
+        button6 =   tk.Button(self, text="Fried Okra", command=lambda: tableList[currentTable].addToOrder({'Okra':0}))
         button6.grid(row=3, column=3)
-        button7 =   tk.Button(self, text="Potato Salad", command=lambda: tableList[tableNumber].addToOrder({'Pot.Salad':0}))
+        button7 =   tk.Button(self, text="Potato Salad", command=lambda: tableList[currentTable].addToOrder({'Pot.Salad':0}))
         button7.grid(row=4,column=1)
-        button8 =   tk.Button(self, text="Coleslaw", command=lambda: tableList[tableNumber].addToOrder({'Slaw':0}))
+        button8 =   tk.Button(self, text="Coleslaw", command=lambda: tableList[currentTable].addToOrder({'Slaw':0}))
         button8.grid(row=4,column=2)
-        button9 =   tk.Button(self, text="Baked Potato", command=lambda: tableList[tableNumber].addToOrder({'BakedPot':0}))
+        button9 =   tk.Button(self, text="Baked Potato", command=lambda: tableList[currentTable].addToOrder({'BakedPot':0}))
         button9.grid(row=4,column=3)
         buttonBack = tk.Button(self, text ="Return", command = lambda: controller.show_frame(OrderPage))
         buttonBack.grid(row=6,column=2)
 
 class DrinksMenu(tk.Frame):
-    def __init__(self,parent,controller,tableNumber):
+    def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
+        global tableList, currentTable
         labelDrinkTitle = tk.Label(self, text = 'Drinks',font = FONT_TYPE)
         labelDrinkTitle.grid(row=1,column=2)
-        button1 =   tk.Button(self, text="Pepsi", command=lambda: tableList[tableNumber].addToOrder({'Pepsi':2.49}))
+        button1 =   tk.Button(self, text="Pepsi", command=lambda: tableList[currentTable].addToOrder({'Pepsi':2.49}))
         button1.grid(row=2, column=1)
-        button2 =   tk.Button(self, text="Diet Pepsi", command=lambda: tableList[tableNumber].addToOrder({'D.Pepsi':2.49}))
+        button2 =   tk.Button(self, text="Diet Pepsi", command=lambda: tableList[currentTable].addToOrder({'D.Pepsi':2.49}))
         button2.grid(row=2, column=2)
-        button3 =   tk.Button(self, text="Mountain Dew", command=lambda: tableList[tableNumber].addToOrder({'MtnDew':2.49}))
+        button3 =   tk.Button(self, text="Mountain Dew", command=lambda: tableList[currentTable].addToOrder({'MtnDew':2.49}))
         button3.grid(row=2,column=3)
-        button4 =   tk.Button(self, text="Diet Mountain Dew", command=lambda: tableList[tableNumber].addToOrder({'D.MtnDew':2.49}))
+        button4 =   tk.Button(self, text="Diet Mountain Dew", command=lambda: tableList[currentTable].addToOrder({'D.MtnDew':2.49}))
         button4.grid(row=3,column=1)
-        button5 =   tk.Button(self, text="Sierra Mist", command=lambda: tableList[tableNumber].addToOrder({'SierraMist':2.49}))
+        button5 =   tk.Button(self, text="Sierra Mist", command=lambda: tableList[currentTable].addToOrder({'SierraMist':2.49}))
         button5.grid(row=3, column=2)
-        button6 =   tk.Button(self, text="Iced Tea", command=lambda: tableList[tableNumber].addToOrder({'Tea':2.49}))
+        button6 =   tk.Button(self, text="Iced Tea", command=lambda: tableList[currentTable].addToOrder({'Tea':2.49}))
         button6.grid(row=3, column=3)
-        button7 =   tk.Button(self, text="Lemonade", command=lambda: tableList[tableNumber].addToOrder({'Lemonade':2.49}))
+        button7 =   tk.Button(self, text="Lemonade", command=lambda: tableList[currentTable].addToOrder({'Lemonade':2.49}))
         button7.grid(row=4,column=1)
-        button8 =   tk.Button(self, text="Coffee", command=lambda: tableList[tableNumber].addToOrder({'Coffee':2.49}))
+        button8 =   tk.Button(self, text="Coffee", command=lambda: tableList[currentTable].addToOrder({'Coffee':2.49}))
         button8.grid(row=4,column=2)
-        button9 =   tk.Button(self, text="Decaf. Coffee", command=lambda: tableList[tableNumber].addToOrder({'Decaf':2.49}))
+        button9 =   tk.Button(self, text="Decaf. Coffee", command=lambda: tableList[currentTable].addToOrder({'Decaf':2.49}))
         button9.grid(row=4,column=3)
-        button0 =   tk.Button(self, text="Kids", command=lambda: tableList[tableNumber].addToOrder({'KidsDrink':1.49}))
+        button0 =   tk.Button(self, text="Kids", command=lambda: tableList[currentTable].addToOrder({'KidsDrink':1.49}))
         button0.grid(row=5,column=1)
-        button0 =   tk.Button(self, text="Water", command=lambda: tableList[tableNumber].addToOrder({'Water':0}))
+        button0 =   tk.Button(self, text="Water", command=lambda: tableList[currentTable].addToOrder({'Water':0}))
         button0.grid(row=5,column=2)
-        button0 =   tk.Button(self, text="None", command=lambda: tableList[tableNumber].addToOrder({'NoDrink':0}))
+        button0 =   tk.Button(self, text="None", command=lambda: tableList[currentTable].addToOrder({'NoDrink':0}))
         button0.grid(row=5,column=3)
         buttonBack = tk.Button(self, text ="Return", command = lambda: controller.show_frame(OrderPage))
         buttonBack.grid(row=6,column=2)
 
+class OrderSummary(tk.Frame):
+    def __init__ (self,parent,controller):
+        tk.Frame.__init__(self,parent)
+        global tableList, currentTable
+        labelTitle = tk.Label(self, text='Order overview')
+        labelTitle.grid(row=1, column=1, columnspan=100)
+        labelPlates = tk.Label(self,text='Plates')
+        labelPlates.grid(row=2,column=0)
+        keys= list(tableList[currentTable]._order.keys())
+        values= list(tableList[currentTable]._order.values())
+        stringPlates=''.join(keys)    
+        labelPlateall= tk.Label(self,text=stringPlates) 
+        labelPlateall.grid(row=3, column=0)
+            
 
+class SubmissionPage(tk.Button):
+    def _init__(self,parent,controller):
+        tk.Frame.__init__(self,parent)
+        labelTotal = tk.Label(self, text = "Your total is:", font = FONT_TYPE)
+        labelTotal.grid(row=1, column=2)
+        labelFinalPrice = tk.Label(self, text = finalPrice, font = FONT_TYPE)
+        labelFinalPrice.grid(row=2, column=2)
+        buttonBack = tk.button(self, text = 'Return', command = lambda: controller.show_frame(OrderSummary))
+        buttonBack.grid(row=5, column=2)
+        buttonTable = tk.Button(self,text ="Create new table", command = lambda: controller.show_frame(TabCreatePage))
+        buttonTable.grid(row=6, column=2)
+        
 app=POSSystem()
 app.mainloop()
